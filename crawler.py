@@ -4,7 +4,6 @@ import requests
 from typing import Optional
 from bs4 import BeautifulSoup as bs
 from functools import reduce
-import json
 import datetime as dt
 from pprint import pprint
 
@@ -23,6 +22,8 @@ DAUM_CAFE_PAGE_NUM = 1
 NAVER_BLOG = "naver_blog"
 NAVER_CAFE = "naver_cafe"
 DAUM_CAFE = "daum_cafe"
+
+KEYWORDS = ["비법", "비밥", "카우보이", "비비빅", "바밤바"]
 
 
 def get_html(url: str) -> Optional[str]:
@@ -163,8 +164,6 @@ def save_to_dynamo(platform: str, results: list):
 
 
 if __name__ == "__main__":
-    with open("keywords.json") as t:
-        keywords = json.load(t)["keywords"]
     switcher = {
         "naver_blog": crawl_naver_blog,
         "naver_cafe": crawl_naver_cafe,
@@ -176,5 +175,5 @@ if __name__ == "__main__":
         "daum_cafe": "https://search.daum.net/search?w=cafe&nil_search=btn&DA=NTB&enc=utf8&ASearchType=1&lpp=10&rlang=0&q=",
     }
     for key in switcher.keys():
-        results = switcher[key](url[key], keywords)
+        results = switcher[key](url[key], KEYWORDS)
         pprint(save_to_dynamo(key, results))
